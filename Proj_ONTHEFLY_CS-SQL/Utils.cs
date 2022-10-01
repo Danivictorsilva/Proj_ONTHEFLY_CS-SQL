@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Proj_ONTHEFLY_CS_SQL
 {
@@ -29,7 +30,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         {
             Console.Write(text);
             DateTime d;
-            while (!DateTime.TryParse(Console.ReadLine(), out d))
+            while (!DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
                 Console.Write("Digite uma data válida!\n{0}", text);
             return d;
         }
@@ -39,56 +40,96 @@ namespace Proj_ONTHEFLY_CS_SQL
                 if (list[i] == c) return true;
             return false;
         }
-        public static string ReadCPF(string text)
+        public static bool ValidCPF(ref string cPF, ref string msg)
         {
-            string cpfString;
-            long cpfLong;
+            string cpfString = cPF;
             int digVerificador, v1, v2, aux;
             int[] digitosCPF = new int[9];
-            bool digitosIguais;
 
-            while (true)
+            if (!long.TryParse(cpfString, out long cpfLong))
             {
-                Console.Write(text);
-                cpfString = Console.ReadLine();
-                while (!long.TryParse(cpfString, out cpfLong))
+                msg = "O CPF é inválido\n";
+                return false;
+            }
+            digVerificador = (int)(cpfLong % 100);
+            cpfLong /= 100;
+            for (int i = 0; i < 9; i++)
+            {
+                aux = (int)(cpfLong % 10);
+                digitosCPF[i] = aux;
+                cpfLong /= 10;
+            }
+            for (int i = 0; i < digitosCPF.Length; i++)
+            {
+                if (i == digitosCPF.Length - 1)
                 {
-                    Console.Write("Digite um CPF válido!\n{0}", text);
-                    cpfString = Console.ReadLine();
+                    msg = "O CPF é inválido\n";
+                    return false;
                 }
-                digVerificador = (int)(cpfLong % 100);
-                cpfLong /= 100;
-                for (int i = 0; i < 9; i++)
-                {
-                    aux = (int)cpfLong % 10;
-                    digitosCPF[i] = aux;
-                    cpfLong /= 10;
-                }
-                digitosIguais = false;
-                for (int i = 0; i < digitosCPF.Length; i++)
-                {
-                    if (i == digitosCPF.Length - 1)
-                    {
-                        Console.WriteLine("O CPF não segue as regras de validação da Receita Federal!");
-                        digitosIguais = true;
-                        break;
-                    }
-                    if (digitosCPF[i] != digitosCPF[i + 1]) break;
-                }
-                if (digitosIguais) continue;
-                v1 = v2 = 0;
-                for (int i = 0; i < 9; i++)
-                {
-                    v1 += digitosCPF[i] * (9 - i);
-                    v2 += digitosCPF[i] * (8 - i);
-                }
-                v1 = (v1 % 11) % 10;
-                v2 += v1 * 9;
-                v2 = (v2 % 11) % 10;
-                if (v1 * 10 + v2 == digVerificador) return cpfString;
-                else Console.WriteLine("O CPF não segue as regras de validação da Receita Federal!");
+                if (digitosCPF[i] != digitosCPF[i + 1]) break;
+            }
+            v1 = v2 = 0;
+            for (int i = 0; i < 9; i++)
+            {
+                v1 += digitosCPF[i] * (9 - i);
+                v2 += digitosCPF[i] * (8 - i);
+            }
+            v1 = (v1 % 11) % 10;
+            v2 += v1 * 9;
+            v2 = (v2 % 11) % 10;
+            if (v1 * 10 + v2 == digVerificador) return true;
+            else
+            {
+                msg = "O CPF é inválido\n";
+                return false;
             }
         }
+        public static bool ValidCNPJ(ref string cPF, ref string msg)
+        {
+            string cnpjString = cPF;
+            int digVerificador, v1, v2, aux;
+            int[] digitosCNPJ = new int[12];
+            int[] auxVector = new int[] { 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2 };
+
+            if (!long.TryParse(cnpjString, out long cnpjLong))
+            {
+                msg = "O CNPJ é inválido\n";
+                return false;
+            }
+            digVerificador = (int)(cnpjLong % 100);
+            cnpjLong /= 100;
+            for (int i = 0; i < 12; i++)
+            {
+                aux = (int)(cnpjLong % 10);
+                digitosCNPJ[i] = aux;
+                cnpjLong /= 10;
+            }
+            for (int i = 0; i < digitosCNPJ.Length; i++)
+            {
+                if (i == digitosCNPJ.Length - 1)
+                {
+                    msg = "O CNPJ é inválido\n";
+                    return false;
+                }
+                if (digitosCNPJ[i] != digitosCNPJ[i + 1]) break;
+            }
+            v1 = v2 = 0;
+            for (int i = 0; i < 12; i++)
+            {
+                v1 += digitosCNPJ[i] * (11 - auxVector[11 - i]);
+                if (i < 11) v2 += digitosCNPJ[i] * (11 - auxVector[10 - i]);
+            }
+            v1 = (v1 % 11) % 10;
+            v2 += digitosCNPJ[11] * 5 + v1 * 9;
+            v2 = (v2 % 11) % 10;
+            if (v1 * 10 + v2 == digVerificador) return true;
+            else
+            {
+                msg = "O CNPJ é inválido\n";
+                return false;
+            }
+        }
+
         public static string ReadTelefone(string text)
         {
             string TelString;
@@ -110,7 +151,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         public static char ReadSexo(string text)
         {
             char s = Char.ToUpper(ReadChar(text));
-            while (s != 'M' && s != 'F')
+            while (s != 'M' && s != 'F' && s != 'N')
             {
                 Console.WriteLine("Entrada inválida! Digite novamente...");
                 s = Char.ToUpper(ReadChar(text));

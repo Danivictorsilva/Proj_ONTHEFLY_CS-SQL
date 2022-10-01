@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Proj_ONTHEFLY_CS_SQL
 {
@@ -24,11 +25,34 @@ namespace Proj_ONTHEFLY_CS_SQL
             DataCadastro = dataCadastro;
             Situacao = situacao;
         }
+        public Passageiro(string cPF, string nome, DateTime dataNascimento, char sexo)
+        {
+            CPF = cPF;
+            Nome = nome;
+            DataNascimento = dataNascimento;
+            Sexo = sexo;
+        }
+        public Passageiro(string cPF, char situacao)
+        {
+            CPF = cPF;
+            Situacao = situacao;
+        }
         public override string ToString()
         {
-            return String.Format("{{'{0}';'{1}';'{2}';'{3}';'{4}';'{5}';'{6}'}}",
-                CPF, Nome, DataNascimento.ToShortDateString(), Sexo, UltimaCompra.ToShortDateString(), DataCadastro.ToShortDateString(), Situacao);
+            return $"CPF:\t\t\t{CPF.Substring(0, 3)}.{CPF.Substring(3, 3)}.{CPF.Substring(6, 3)}-{CPF.Substring(9, 2)}\n" +
+                    $"Nome:\t\t\t{Nome}\n" +
+                    $"Data de Nascimento:\t{DataNascimento:dd/MM/yyyy}\n" +
+                    $"Sexo:\t\t\t{Sexo}\n" +
+                    $"Ultima Compra:\t\t{UltimaCompra:dd/MM/yyyy}\n" +
+                    $"Data Cadastro:\t\t{DataCadastro:dd/MM/yyyy}";
         }
-        public static string ReturnHeader() => "CPF;Nome;DataNascimento;Sexo;UltimaCompra;DataCadastro;Situacao\n";
+        public static bool FindKey(List<Passageiro> listaDePassageiros, string cPF)
+        {
+            foreach (Passageiro passageiro in listaDePassageiros)
+            {
+                if (passageiro.CPF == cPF) return true;
+            }
+            return false;
+        }
     }
 }
