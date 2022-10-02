@@ -65,6 +65,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+        //FUNCOES DE ACESSO A COMPANHIA AEREA
         public static List<CompanhiaAerea> GetCompanhiaAerea()
         {
             try
@@ -121,5 +122,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+        //FUNCOES DE ACESSO A AERONAVE
+
     }
 }

@@ -21,9 +21,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         public static char ReadChar(string text)
         {
             Console.Write(text);
-            char c;
-            while (!char.TryParse(Console.ReadLine(), out c))
-                Console.Write("Digite um caractere válido!\n{0}", text);
+            char c = Console.ReadKey().KeyChar;
             return c;
         }
         public static DateTime ReadDateTime(string text)
@@ -35,6 +33,12 @@ namespace Proj_ONTHEFLY_CS_SQL
             return d;
         }
         public static bool BuscarNoArray(string c, string[] list)
+        {
+            for (int i = 0; i < list.Length; i++)
+                if (list[i] == c) return true;
+            return false;
+        }
+        public static bool BuscarNoArray(char c, char[] list)
         {
             for (int i = 0; i < list.Length; i++)
                 if (list[i] == c) return true;
@@ -129,7 +133,6 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return false;
             }
         }
-
         public static string ReadTelefone(string text)
         {
             string TelString;
@@ -150,13 +153,16 @@ namespace Proj_ONTHEFLY_CS_SQL
         }
         public static char ReadSexo(string text)
         {
-            char s = Char.ToUpper(ReadChar(text));
-            while (s != 'M' && s != 'F' && s != 'N')
+            Console.Write(text);
+            char c = ' ';
+            while (c != 'M' && c != 'F' && c != 'N')
             {
-                Console.WriteLine("Entrada inválida! Digite novamente...");
-                s = Char.ToUpper(ReadChar(text));
+                while (!char.TryParse(Console.ReadLine(), out c))
+                    Console.Write("Digite um caractere válido!\n{0}", text);
+                c = Char.ToUpper(c);
+                if (c != 'M' && c != 'F' && c != 'N') Console.Write("Digite um caractere válido!\n{0}", text);
             }
-            return s;
+            return c;
         }
     }
 }

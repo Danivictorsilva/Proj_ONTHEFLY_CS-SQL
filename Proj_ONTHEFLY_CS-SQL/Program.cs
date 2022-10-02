@@ -9,208 +9,81 @@ namespace Proj_ONTHEFLY_CS_SQL
     {
         static void Main(string[] args)
         {
-
-            //Declaracoes
-            string op = "-1";
-            string msg = "";
-            List<String> optionsList = new()
-            {
+            Menus.ShowThreeOptionsMenu
+            (
+                "TELA INICIAL",
                 "Modulo de Cadastro",
                 "Modulo de Registro de Voos e Passagens",
                 "Modulo de Venda de Passagens",
-                "Sair do Programa"
-            };
-            string[] options = new string[optionsList.Count];
-
-            //Programa Principal
-            options[optionsList.Count - 1] = "0";
-            for (int i = 0; i < optionsList.Count - 1; i++) options[i] = (i + 1).ToString();
-            while (op != "0")
-            {
-                Console.Clear();
-                Console.WriteLine("*********TELA INICIAL*********");
-                for (int i = 0; i < optionsList.Count; i++) Console.WriteLine($"{options[i]}. {optionsList[i]}");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção invalida! Digite novamente...";
-                    continue;
-                }
-                switch (op)
-                {
-                    case "1":
-                        Modulo_Cadastro();
-                        msg = "";
-                        break;
-                    case "2":
-                        Modulo_ResgistroVoo();
-                        msg = "";
-                        break;
-                    case "3":
-                        Modulo_VendaPassagem();
-                        msg = "";
-                        break;
-                    case "0":
-                        msg = "";
-                        break;
-                }
-            }
-            
+                Modulo_Cadastro,
+                Modulo_RegistroVoo,
+                Modulo_VendaPassagem
+            );
         }
 
-        private static void Modulo_Cadastro()
+        private static string Modulo_Cadastro()
         {
-            //Declaracoes
-            string op = "-1";
-            string msg = "";
-            List<String> optionsList = new()
-            {
+            Menus.ShowFiveOptionsMenu
+            (
+                "MODULO DE CADASTRO",
                 "Cadastro de Passageiro",
                 "Cadastro de Companhia Aérea",
                 "Cadastro de Aeronave",
                 "Cadastro de Restritos",
                 "Cadastro de Bloqueados",
-                "Voltar"
-            };
-            string[] options = new string[optionsList.Count];
-
-            //Programa Principal
-            options[optionsList.Count - 1] = "0";
-            for (int i = 0; i < optionsList.Count - 1; i++) options[i] = (i + 1).ToString();
-            while (op != "0")
-            {
-                Console.Clear();
-                Console.WriteLine("*********MODULO DE CADASTROS*********");
-                for (int i = 0; i < optionsList.Count; i++) Console.WriteLine($"{options[i]}. {optionsList[i]}");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção invalida! Digite novamente...";
-                    continue;
-                }
-                switch (op)
-                {
-                    case "1":
-                        Modulo_Cadastro_Passageiro();
-                        msg = "";
-                        break;
-                    case "2":
-                        Modulo_Cadastro_CompanhiaAerea();
-                        msg = "";
-                        break;
-                    case "3":
-                        Modulo_Cadastro_Aeronave();
-                        msg = "";
-                        break;
-                    case "4":
-                        Modulo_Cadastro_Restritos();
-                        msg = "";
-                        break;
-                    case "5":
-                        Modulo_Cadastro_Bloqueados();
-                        msg = "";
-                        break;
-                    case "6":
-                        Modulo_Cadastro_Destino();
-                        msg = "";
-                        break;
-                    case "0":
-                        msg = "";
-                        break;
-                }
-            }
+                Modulo_Cadastro_Passageiro,
+                Modulo_Cadastro_CompanhiaAerea,
+                Modulo_Cadastro_Aeronave,
+                Modulo_Cadastro_Restritos,
+                Modulo_Cadastro_Bloqueados
+            );
+            return "";
         }
         // SUBMODULO CADASTRO PASSAGEIRO **************************************************************
-        private static void Modulo_Cadastro_Passageiro()
+        private static string Modulo_Cadastro_Passageiro()
         {
-            //Declaracoes
-            string op = "-1";
-            string msg = "";
-            List<String> optionsList = new()
-            {
+            Menus.ShowFiveOptionsMenu
+            (
+                "MODULO DE CADASTRO DE PASSAGEIRO",
                 "Cadastrar Novo",
                 "Localizar Registro",
                 "Editar Registro",
                 "Inativar Registro",
                 "Visualizar Registros Ativos",
-                "Voltar"
-            };
-            string[] options = new string[optionsList.Count];
-
-            //Programa Principal
-            options[optionsList.Count - 1] = "0";
-            for (int i = 0; i < optionsList.Count - 1; i++) options[i] = (i + 1).ToString();
-            while (op != "0")
-            {
-                Console.Clear();
-                Console.WriteLine("*********MODULO DE CADASTRO DE PASSAGEIRO*********");
-                for (int i = 0; i < optionsList.Count; i++) Console.WriteLine($"{options[i]}. {optionsList[i]}");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção invalida! Digite novamente...";
-                    continue;
-                }
-                switch (op)
-                {
-                    case "1":
-                        msg = Modulo_Cadastro_Passageiro_New();
-                        break;
-                    case "2":
-                        msg = Modulo_Cadastro_Passageiro_Find();
-                        break;
-                    case "3":
-                        msg = Modulo_Cadastro_Passageiro_Edit();
-                        break;
-                    case "4":
-                        msg = Modulo_Cadastro_Passageiro_Idle();
-                        break;
-                    case "5":
-                        msg = Modulo_Cadastro_Passageiro_Print();
-                        break;
-                    case "0":
-                        msg = "";
-                        break;
-                }
-            }
+                Modulo_Cadastro_Passageiro_New,
+                Modulo_Cadastro_Passageiro_Find,
+                Modulo_Cadastro_Passageiro_Edit,
+                Modulo_Cadastro_Passageiro_Idle,
+                Modulo_Cadastro_Passageiro_Print
+            );
+            return "";
         }
-
         //FUNCOES CADASTRO PASSAGEIRO
         private static string Modulo_Cadastro_Passageiro_New()
         {
-            List<Passageiro> listaDePassageiros;
             string cPF;
             string msg = "";
 
-            try
-            {
-                listaDePassageiros = DataAcces.GetPassageiro();
-            }
-            catch (Exception e)
-            {
-                return $"Error: {e.Message}";
-            }
             cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
             if (!Utils.ValidCPF(ref cPF, ref msg)) return msg;
-            if (Passageiro.FindKey(listaDePassageiros, cPF)) return "Este CPF já consta na base de dados!";
+            Passageiro passageiro =
+            new
+            (
+                cPF,
+                Utils.ReadString("Digite o Nome do passageiro: ").ToUpper(),
+                Utils.ReadDateTime("Digite a Data de Nascimento do passageiro (DD/MM/YYYY): "),
+                Utils.ReadSexo("Digite o Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "),
+                DateTime.Today,
+                DateTime.Today,
+                'A'
+            );
             try
             {
-                DataAcces.InsertPassageiro
-                (
-                    new Passageiro
-                    (
-                        cPF,
-                        Utils.ReadString("Digite o Nome do passageiro: ").ToUpper(),
-                        Utils.ReadDateTime("Digite a Data de Nascimento do passageiro (DD/MM/YYYY): "),
-                        char.ToUpper(Utils.ReadChar("Digite o Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: ")),
-                        DateTime.Today,
-                        DateTime.Today,
-                        'A'
-                    )
-                );
+                DataAcces.InsertPassageiro(passageiro);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
             }
             catch (Exception e)
             {
@@ -227,10 +100,15 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 listaDePassageiros = DataAcces.GetPassageiro();
             }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
+
             cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
             foreach (Passageiro passageiro in listaDePassageiros)
             {
@@ -242,30 +120,39 @@ namespace Proj_ONTHEFLY_CS_SQL
         {
             List<Passageiro> listaDePassageiros;
             string cPF;
+            Passageiro passageiro;
 
             try
             {
                 listaDePassageiros = DataAcces.GetPassageiro();
             }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
+
             cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
             if (Passageiro.FindKey(listaDePassageiros, cPF))
             {
+                passageiro =
+                new
+                (
+                    cPF,
+                    Utils.ReadString("Digite o novo Nome do passageiro: ").ToUpper(),
+                    Utils.ReadDateTime("Digite a nova Data de Nascimento do passageiro (DD/MM/YYYY): "),
+                    char.ToUpper(Utils.ReadChar("Digite o novo Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "))
+                );
                 try
                 {
-                    DataAcces.UpdatePassageiro
-                    (
-                        new Passageiro
-                        (
-                            cPF,
-                            Utils.ReadString("Digite o novo Nome do passageiro: ").ToUpper(),
-                            Utils.ReadDateTime("Digite a nova Data de Nascimento do passageiro (DD/MM/YYYY): "),
-                            char.ToUpper(Utils.ReadChar("Digite o novo Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "))
-                        )
-                    );
+                    DataAcces.UpdatePassageiro(passageiro);
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
                 }
                 catch (Exception e)
                 {
@@ -284,17 +171,25 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 listaDePassageiros = DataAcces.GetPassageiro();
             }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
 
+            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
             if (Passageiro.FindKey(listaDePassageiros, cPF))
             {
                 try
                 {
                     DataAcces.UpdateFlipStatusPassageiro(new Passageiro(cPF, 'I'));
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
                 }
                 catch (Exception e)
                 {
@@ -306,148 +201,81 @@ namespace Proj_ONTHEFLY_CS_SQL
         }
         private static string Modulo_Cadastro_Passageiro_Print()
         {
-            string op = "-1";
+            char op = ' ';
             string msg = "";
-            string[] options = new string[] { "1", "2", "3", "4", "0" };
             int i = 0;
             List<Passageiro> listaDePassageiros;
+            int listLenght;
+            List<String> optionsList = new() { "Ir para o início", "Anterior", "Próximo", "Ir para o último", "Voltar" };
+            char[] options = new char[optionsList.Count];
+            options[optionsList.Count - 1] = '0';
+            for (int j = 0; j < optionsList.Count - 1; j++) options[j] = char.Parse((j + 1).ToString());
+
             try
             {
                 listaDePassageiros = DataAcces.GetPassageiro();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
             }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
 
-            while (op != "0")
-            {
-                Console.Clear();
-                Console.WriteLine("*********REGISTROS DE PASSAGEIROS*********");
-                Console.WriteLine(listaDePassageiros[i]);
-                Console.WriteLine(">>> Qtde total de registros: {0}    /    Registro atual: {1}", listaDePassageiros.Count, i + 1);
-                Console.WriteLine("\nInforme a operacao desejada: ");
-                Console.WriteLine("1. Ir para o início");
-                Console.WriteLine("2. Anterior");
-                Console.WriteLine("3. Próximo");
-                Console.WriteLine("4. Ir para o último");
-                Console.WriteLine("0. Voltar");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção inválida! Digite novamente...";
-                    continue;
-                }
-                msg = "";
-                switch (op)
-                {
-                    case "1":
-                        i = 0;
-                        break;
-                    case "2":
-                        if (i > 0) i--;
-                        break;
-                    case "3":
-                        if (i < listaDePassageiros.Count - 1) i++;
-                        break;
-                    case "4":
-                        i = listaDePassageiros.Count - 1;
-                        break;
-                    case "0":
-                        break;
-                }
-            }
+            listLenght = listaDePassageiros.Count;
+            while (op != '0') 
+                Menus.ShowPrintMenu("REGISTROS DE PASSAGEIROS", ref op, listaDePassageiros[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
+            
             return "";
         }
-
-
+        
         // SUBMODULO CADASTRO COMPANHIA AEREA **************************************************************
-        private static void Modulo_Cadastro_CompanhiaAerea()
+        private static string Modulo_Cadastro_CompanhiaAerea()
         {
-            //Declaracoes
-            string op = "-1";
-            string msg = "";
-            List<String> optionsList = new()
-            {
+            Menus.ShowFiveOptionsMenu
+            (
+                "MODULO DE CADASTRO DE COMPANHIA AÉREA",
                 "Cadastrar Novo",
                 "Localizar Registro",
                 "Editar Registro",
                 "Inativar Registro",
                 "Visualizar Registros Ativos",
-                "Voltar"
-            };
-            string[] options = new string[optionsList.Count];
-
-            //Programa Principal
-            options[optionsList.Count - 1] = "0";
-            for (int i = 0; i < optionsList.Count - 1; i++) options[i] = (i + 1).ToString();
-            while (op != "0")
-            {
-                Console.Clear();
-                Console.WriteLine("*********MODULO DE CADASTRO DE COMPANHIA AEREA*********");
-                for (int i = 0; i < optionsList.Count; i++) Console.WriteLine($"{options[i]}. {optionsList[i]}");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção invalida! Digite novamente...";
-                    continue;
-                }
-                switch (op)
-                {
-                    case "1":
-                        msg = Modulo_Cadastro_CompanhiaAerea_New();
-                        break;
-                    case "2":
-                        msg = Modulo_Cadastro_CompanhiaAerea_Find();
-                        break;
-                    case "3":
-                        msg = Modulo_Cadastro_CompanhiaAerea_Edit();
-                        break;
-                    case "4":
-                        msg = Modulo_Cadastro_CompanhiaAerea_Idle();
-                        break;
-                    case "5":
-                        msg = Modulo_Cadastro_CompanhiaAerea_Print();
-                        break;
-                    case "0":
-                        msg = "";
-                        break;
-                }
-            }
+                Modulo_Cadastro_CompanhiaAerea_New,
+                Modulo_Cadastro_CompanhiaAerea_Find,
+                Modulo_Cadastro_CompanhiaAerea_Edit,
+                Modulo_Cadastro_CompanhiaAerea_Idle,
+                Modulo_Cadastro_CompanhiaAerea_Print
+            );
+            return "";
         }
         private static string Modulo_Cadastro_CompanhiaAerea_New()
         {
-            List<CompanhiaAerea> listaDeCompanhiaAereas;
             string cNPJ;
             string msg = "";
 
-            try
-            {
-                listaDeCompanhiaAereas = DataAcces.GetCompanhiaAerea();
-            }
-            catch (Exception e)
-            {
-                return $"Error: {e.Message}";
-            }
             cNPJ = Utils.ReadString("Digite o CNPJ da companhia aérea (sem pontos ou traços): ");
             if (!Utils.ValidCNPJ(ref cNPJ, ref msg)) return msg;
-            if (CompanhiaAerea.FindKey(listaDeCompanhiaAereas, cNPJ)) return "Este CNPJ já consta na base de dados!";
             CompanhiaAerea companhiaAerea =
-            new CompanhiaAerea
+            new
             (
                 cNPJ,
-                Utils.ReadString("Digite a Razão Social da companhia aérea: ").ToUpper(),
+                Utils.ReadString("Digite a Razão Social da companhia aérea (máximo de 50 dígitos): ").ToUpper(),
                 Utils.ReadDateTime("Digite a Data de Abertura da companhia aérea (DD/MM/YYYY): "),
                 DateTime.Today,
                 DateTime.Today,
                 'A'
             );
-            if ((DateTime.Today - companhiaAerea.DataAbertura).Days < 180) return "Não é permitido cadastrar empresas com menos de 180 dias de operação!";
+            if ((DateTime.Today - companhiaAerea.DataAbertura).Days < 180)
+                return "Não é permitido cadastrar empresas com menos de 180 dias de operação!";
             try
             {
                 DataAcces.InsertCompanhiaAerea(companhiaAerea);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
             }
             catch (Exception e)
             {
@@ -464,10 +292,15 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 listaDeCompanhiaAereas = DataAcces.GetCompanhiaAerea();
             }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
+
             cNPJ = Utils.ReadString("Digite o CNPJ da companhia aérea (sem pontos ou traços): ");
             foreach (CompanhiaAerea companhiaAerea in listaDeCompanhiaAereas)
             {
@@ -479,29 +312,38 @@ namespace Proj_ONTHEFLY_CS_SQL
         {
             List<CompanhiaAerea> listaDeCompanhiaAereas;
             string cNPJ;
+            CompanhiaAerea companhiaAerea;
 
             try
             {
                 listaDeCompanhiaAereas = DataAcces.GetCompanhiaAerea();
             }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
+
             cNPJ = Utils.ReadString("Digite o CNPJ da companhia aérea (sem pontos ou traços): ");
             if (CompanhiaAerea.FindKey(listaDeCompanhiaAereas, cNPJ))
             {
+                companhiaAerea =
+                new
+                (
+                    cNPJ,
+                    Utils.ReadString("Digite a nova Razão Social da companhia aérea: ").ToUpper(),
+                    Utils.ReadDateTime("Digite a nova Data de Nascimento do companhia aérea (DD/MM/YYYY): ")
+                );
                 try
                 {
-                    DataAcces.UpdateCompanhiaAerea
-                    (
-                        new CompanhiaAerea
-                        (
-                            cNPJ,
-                            Utils.ReadString("Digite a nova Razão Social da companhia aérea: ").ToUpper(),
-                            Utils.ReadDateTime("Digite a nova Data de Nascimento do companhia aérea (DD/MM/YYYY): ")
-                        )
-                    );
+                    DataAcces.UpdateCompanhiaAerea(companhiaAerea);
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
                 }
                 catch (Exception e)
                 {
@@ -520,17 +362,25 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 listaDeCompanhiaAereas = DataAcces.GetCompanhiaAerea();
             }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
-            cNPJ = Utils.ReadString("Digite o CNPJ do companhia aérea (sem pontos ou traços): ");
 
+            cNPJ = Utils.ReadString("Digite o CNPJ do companhia aérea (sem pontos ou traços): ");
             if (CompanhiaAerea.FindKey(listaDeCompanhiaAereas, cNPJ))
             {
                 try
                 {
                     DataAcces.UpdateFlipStatusCompanhiaAerea(new CompanhiaAerea(cNPJ, 'I'));
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
                 }
                 catch (Exception e)
                 {
@@ -542,84 +392,55 @@ namespace Proj_ONTHEFLY_CS_SQL
         }
         private static string Modulo_Cadastro_CompanhiaAerea_Print()
         {
-            string op = "-1";
+            char op = ' ';
             string msg = "";
-            string[] options = new string[] { "1", "2", "3", "4", "0" };
             int i = 0;
             List<CompanhiaAerea> listaDeCompanhiaAereas;
+            int listLenght;
+            List<String> optionsList = new() { "Ir para o início", "Anterior", "Próximo", "Ir para o último", "Voltar" };
+            char[] options = new char[optionsList.Count];
+            options[optionsList.Count - 1] = '0';
+            for (int j = 0; j < optionsList.Count - 1; j++) options[j] = char.Parse((j + 1).ToString());
+
             try
             {
                 listaDeCompanhiaAereas = DataAcces.GetCompanhiaAerea();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
             }
             catch (Exception e)
             {
                 return $"Error: {e.Message}";
             }
 
-            while (op != "0")
-            {
-                Console.Clear();
-                Console.WriteLine("*********REGISTROS DE PASSAGEIROS*********");
-                Console.WriteLine(listaDeCompanhiaAereas[i]);
-                Console.WriteLine(">>> Qtde total de registros: {0}    /    Registro atual: {1}", listaDeCompanhiaAereas.Count, i + 1);
-                Console.WriteLine("\nInforme a operacao desejada: ");
-                Console.WriteLine("1. Ir para o início");
-                Console.WriteLine("2. Anterior");
-                Console.WriteLine("3. Próximo");
-                Console.WriteLine("4. Ir para o último");
-                Console.WriteLine("0. Voltar");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção inválida! Digite novamente...";
-                    continue;
-                }
-                msg = "";
-                switch (op)
-                {
-                    case "1":
-                        i = 0;
-                        break;
-                    case "2":
-                        if (i > 0) i--;
-                        break;
-                    case "3":
-                        if (i < listaDeCompanhiaAereas.Count - 1) i++;
-                        break;
-                    case "4":
-                        i = listaDeCompanhiaAereas.Count - 1;
-                        break;
-                    case "0":
-                        break;
-                }
-            }
+            listLenght = listaDeCompanhiaAereas.Count;
+            while (op != '0')
+                Menus.ShowPrintMenu("REGISTROS DE COMPANHIAS AÉREAS", ref op, listaDeCompanhiaAereas[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
+
             return "";
         }
 
 
-        private static void Modulo_Cadastro_Aeronave()
+        private static string Modulo_Cadastro_Aeronave()
         {
             throw new NotImplementedException();
         }
 
-        private static void Modulo_Cadastro_Restritos()
+        private static string Modulo_Cadastro_Restritos()
         {
             throw new NotImplementedException();
         }
 
-        private static void Modulo_Cadastro_Bloqueados()
+        private static string Modulo_Cadastro_Bloqueados()
         {
             throw new NotImplementedException();
         }
 
-        private static void Modulo_Cadastro_Destino()
-        {
-            throw new NotImplementedException();
-        }
         //#endregion
 
-        private static void Modulo_ResgistroVoo()
+        private static string Modulo_RegistroVoo()
         {
             //Declaracoes
             string op = "-1";
@@ -672,9 +493,10 @@ namespace Proj_ONTHEFLY_CS_SQL
                         break;
                 }
             }
+            return msg;
         }
 
-        private static void Modulo_VendaPassagem()
+        private static string Modulo_VendaPassagem()
         {
             //Declaracoes
             string op = "-1";
@@ -731,6 +553,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                         break;
                 }
             }
+            return msg;
         }
     }
 }

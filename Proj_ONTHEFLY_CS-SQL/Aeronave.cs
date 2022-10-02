@@ -26,11 +26,32 @@ namespace Proj_ONTHEFLY_CS_SQL
             Situacao = situacao;
             CNPJCompanhia = cNPJCompanhia;
         }
+        public Aeronave(string inscricao, int capacidade, string cNPJCompanhia)
+        {
+            Inscricao = inscricao;
+            Capacidade = capacidade;
+            CNPJCompanhia = cNPJCompanhia;
+        }
+        public Aeronave(string incricao, char situacao)
+        {
+            Inscricao = incricao;
+            Situacao = situacao;
+        }
         public override string ToString()
         {
-            return String.Format("{{'{0}';'{1}';'{2}';'{3}';'{4}';'{5}'}}",
-                Inscricao, Capacidade, UltimaVenda.ToShortDateString(), DataCadastro.ToShortDateString(), Situacao, CNPJCompanhia);
+            return $"Inscrição:\t\t\t{Inscricao}\n" +
+                    $"Capacidade:\t\t{Capacidade}\n" +
+                    $"Última Venda:\t{UltimaVenda:dd/MM/yyyy}\n" +
+                    $"Data Cadastro:\t\t{DataCadastro:dd/MM/yyyy}\n" +
+                    $"CNPJ Companhia Aérea:\t\t{CNPJCompanhia.Substring(0, 2)}.{CNPJCompanhia.Substring(2, 3)}.{CNPJCompanhia.Substring(5, 3)}/{CNPJCompanhia.Substring(8, 4)}-{CNPJCompanhia.Substring(12, 2)}";
         }
-        public static string ReturnHeader() => "Inscricao;Capacidade;UltimaVenda;DataCadastro;Situacao;CNPJCompanhia\n";
+        public static bool FindKey(List<Aeronave> listaDeAeronaves, string incricao)
+        {
+            foreach (Aeronave aeronave in listaDeAeronaves)
+            {
+                if (aeronave.Inscricao == incricao) return true;
+            }
+            return false;
+        }
     }
 }
