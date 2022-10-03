@@ -39,11 +39,11 @@ namespace Proj_ONTHEFLY_CS_SQL
         }
         public override string ToString()
         {
-            return $"Inscrição:\t\t\t{Inscricao}\n" +
+            return $"Inscrição:\t\t{Inscricao}\n" +
                     $"Capacidade:\t\t{Capacidade}\n" +
-                    $"Última Venda:\t{UltimaVenda:dd/MM/yyyy}\n" +
+                    $"Última Venda:\t\t{UltimaVenda:dd/MM/yyyy}\n" +
                     $"Data Cadastro:\t\t{DataCadastro:dd/MM/yyyy}\n" +
-                    $"CNPJ Companhia Aérea:\t\t{CNPJCompanhia.Substring(0, 2)}.{CNPJCompanhia.Substring(2, 3)}.{CNPJCompanhia.Substring(5, 3)}/{CNPJCompanhia.Substring(8, 4)}-{CNPJCompanhia.Substring(12, 2)}";
+                    $"CNPJ Companhia Aérea:\t{CNPJCompanhia.Substring(0, 2)}.{CNPJCompanhia.Substring(2, 3)}.{CNPJCompanhia.Substring(5, 3)}/{CNPJCompanhia.Substring(8, 4)}-{CNPJCompanhia.Substring(12, 2)}";
         }
         public static bool FindKey(List<Aeronave> listaDeAeronaves, string incricao)
         {

@@ -225,19 +225,20 @@ namespace Proj_ONTHEFLY_CS_SQL
             }
 
             listLenght = listaDePassageiros.Count;
-            while (op != '0') 
+            if (listLenght == 0) return "Nenhum registro consta na base de dados!";
+            while (op != '0')
                 Menus.ShowPrintMenu("REGISTROS DE PASSAGEIROS", ref op, listaDePassageiros[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
-            
+
             return "";
         }
-        
+
         // SUBMODULO CADASTRO COMPANHIA AEREA **************************************************************
         private static string Modulo_Cadastro_CompanhiaAerea()
         {
             Menus.ShowFiveOptionsMenu
             (
                 "MODULO DE CADASTRO DE COMPANHIA AÉREA",
-                "Cadastrar Novo",
+                "Cadastrar Nova",
                 "Localizar Registro",
                 "Editar Registro",
                 "Inativar Registro",
@@ -250,6 +251,7 @@ namespace Proj_ONTHEFLY_CS_SQL
             );
             return "";
         }
+        //FUNCOES CADASTRO COMPANHIA AEREA
         private static string Modulo_Cadastro_CompanhiaAerea_New()
         {
             string cNPJ;
@@ -416,84 +418,616 @@ namespace Proj_ONTHEFLY_CS_SQL
             }
 
             listLenght = listaDeCompanhiaAereas.Count;
+            if (listLenght == 0) return "Nenhum registro consta na base de dados!";
             while (op != '0')
                 Menus.ShowPrintMenu("REGISTROS DE COMPANHIAS AÉREAS", ref op, listaDeCompanhiaAereas[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
 
             return "";
         }
 
-
+        // SUBMODULO CADASTRO AERONAVES **************************************************************
         private static string Modulo_Cadastro_Aeronave()
         {
-            throw new NotImplementedException();
+            Menus.ShowFiveOptionsMenu
+            (
+                "MODULO DE CADASTRO DE AERONAVE",
+                "Cadastrar Nova",
+                "Localizar Registro",
+                "Editar Registro",
+                "Inativar Registro",
+                "Visualizar Registros Ativos",
+                Modulo_Cadastro_Aeronave_New,
+                Modulo_Cadastro_Aeronave_Find,
+                Modulo_Cadastro_Aeronave_Edit,
+                Modulo_Cadastro_Aeronave_Idle,
+                Modulo_Cadastro_Aeronave_Print
+            );
+            return "";
+        }
+        //FUNCOES CADASTRO AERONAVES
+        private static string Modulo_Cadastro_Aeronave_New()
+        {
+            string inscricao;
+            string msg = "";
+            string cNPJCompanhia;
+            int capacity;
+            bool auxBool;
+
+            cNPJCompanhia = Utils.ReadString("Digite o CNPJ da companhia aérea a qual a aeronave pertence (sem pontos ou traços): ");
+            if (!Utils.ValidCNPJ(ref cNPJCompanhia, ref msg)) return msg;
+            do
+            {
+                inscricao = Utils.ReadString("Digite o código de Inscrição da aeronave (6 dígitos): ");
+                auxBool = inscricao.Length != 6;
+                if (auxBool) Console.WriteLine("Opção inválida...");
+            } while (auxBool);
+            do
+            {
+                capacity = Utils.ReadInt("Digite a capacidade da aeronave (máximo 999 assentos): ");
+                auxBool = capacity < 0 || capacity > 999;
+                if (auxBool) Console.WriteLine("Opção inválida...");
+            } while (auxBool);
+            Aeronave aeronave =
+            new
+            (
+                inscricao.ToUpper(),
+                capacity,
+                DateTime.Today,
+                DateTime.Today,
+                'A',
+                cNPJCompanhia
+            );
+
+            try
+            {
+                DataAcces.InsertAeronave(aeronave);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+            return "Inserção realizada com sucesso!";
+        }
+        private static string Modulo_Cadastro_Aeronave_Find()
+        {
+            List<Aeronave> listaDeAeronaves;
+            string inscricao;
+
+            try
+            {
+                listaDeAeronaves = DataAcces.GetAeronave();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            inscricao = Utils.ReadString("Digite o código de Inscrição da aeronave (6 dígitos): ").ToUpper();
+            foreach (Aeronave aeronave in listaDeAeronaves)
+            {
+                if (aeronave.Inscricao == inscricao) return $"\n{aeronave}\n";
+            }
+            return "Esta Aeronave não consta na base de dados!";
+        }
+        private static string Modulo_Cadastro_Aeronave_Edit()
+        {
+            List<Aeronave> listaDeAeronaves;
+            string inscricao;
+            Aeronave aeronave;
+            int capacity;
+            bool auxBool;
+            string cNPJCompanhia;
+            string msg = "";
+
+            try
+            {
+                listaDeAeronaves = DataAcces.GetAeronave();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            inscricao = Utils.ReadString("Digite o código de Inscrição da aeronave (6 dígitos): ").ToUpper();
+            if (Aeronave.FindKey(listaDeAeronaves, inscricao))
+            {
+                do
+                {
+                    capacity = Utils.ReadInt("Digite a nova capacidade da aeronave (máximo 999 assentos): ");
+                    auxBool = capacity < 0 || capacity > 999;
+                    if (auxBool) Console.WriteLine("Opção inválida...");
+                } while (auxBool);
+                cNPJCompanhia = Utils.ReadString("Digite o CNPJ da companhia aérea a qual a aeronave pertence (sem pontos ou traços): ");
+                if (!Utils.ValidCNPJ(ref cNPJCompanhia, ref msg)) return msg;
+                aeronave =
+                new
+                (
+                    inscricao,
+                    capacity,
+                    cNPJCompanhia
+                );
+                try
+                {
+                    DataAcces.UpdateAeronave(aeronave);
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+                return "Edição realizada com sucesso!";
+            }
+            return "Esta Inscrição não consta na base de dados!";
+        }
+        private static string Modulo_Cadastro_Aeronave_Idle()
+        {
+            List<Aeronave> listaDeAeronaves;
+            string inscricao;
+
+            try
+            {
+                listaDeAeronaves = DataAcces.GetAeronave();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            inscricao = Utils.ReadString("Digite o código de Inscrição da aeronave (6 dígitos): ").ToUpper();
+            if (Aeronave.FindKey(listaDeAeronaves, inscricao))
+            {
+                try
+                {
+                    DataAcces.UpdateFlipStatusAeronave(new Aeronave(inscricao, 'I'));
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+                return "Aeronave inativada com sucesso!";
+            }
+            return "Esta Inscrição não consta na base de dados!";
+        }
+        private static string Modulo_Cadastro_Aeronave_Print()
+        {
+            char op = ' ';
+            string msg = "";
+            int i = 0;
+            List<Aeronave> listaDeAeronaves;
+            int listLenght;
+            List<String> optionsList = new() { "Ir para o início", "Anterior", "Próximo", "Ir para o último", "Voltar" };
+            char[] options = new char[optionsList.Count];
+            options[optionsList.Count - 1] = '0';
+            for (int j = 0; j < optionsList.Count - 1; j++) options[j] = char.Parse((j + 1).ToString());
+
+            try
+            {
+                listaDeAeronaves = DataAcces.GetAeronave();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+            listLenght = listaDeAeronaves.Count;
+            if (listLenght == 0) return "Nenhum registro consta na base de dados!";
+            while (op != '0')
+                Menus.ShowPrintMenu("REGISTROS DE AERONAVES", ref op, listaDeAeronaves[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
+
+            return "";
         }
 
+        // SUBMODULO CADASTRO RESTRITOS **************************************************************
         private static string Modulo_Cadastro_Restritos()
         {
-            throw new NotImplementedException();
+            Menus.ShowThreeOptionsMenu
+            (
+                "MODULO DE CADASTRO DE CPFs RESTRITOS",
+                "Cadastrar Novo",
+                "Localizar Registro",
+                "Deletar Registro",
+                Modulo_Cadastro_Restritos_New,
+                Modulo_Cadastro_Restritos_Find,
+                Modulo_Cadastro_Restritos_Delete
+            );
+            return "";
         }
+        //FUNCOES CADASTRO RESTRITOS
+        private static string Modulo_Cadastro_Restritos_New()
+        {
+            string cPF;
+            string msg = "";
 
+            cPF = Utils.ReadString("Digite o CPF restrito (sem pontos ou traços): ");
+            if (!Utils.ValidCPF(ref cPF, ref msg)) return msg;
+            Restritos restritos = new(cPF);
+            try
+            {
+                DataAcces.InsertRestritos(restritos);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+            return "Inserção realizada com sucesso!";
+        }
+        private static string Modulo_Cadastro_Restritos_Find()
+        {
+            List<Restritos> listaDeRestritos;
+            string cPF;
+
+            try
+            {
+                listaDeRestritos = DataAcces.GetRestritos();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cPF = Utils.ReadString("Digite o CPF do restrito (sem pontos ou traços): ");
+            if (Restritos.FindKey(listaDeRestritos, cPF)) return "Este CPF consta como restrito.";
+            return "Este CPF não consta como restrito.";
+        }
+        private static string Modulo_Cadastro_Restritos_Delete()
+        {
+            List<Restritos> listaDeRestritos;
+            string cPF;
+
+            try
+            {
+                listaDeRestritos = DataAcces.GetRestritos();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cPF = Utils.ReadString("Digite o CPF do restrito (sem pontos ou traços): ");
+            if (Restritos.FindKey(listaDeRestritos, cPF))
+            {
+                try
+                {
+                    DataAcces.DeleteRestritos(new Restritos(cPF));
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+                return "O CPF não consta mais como restrito!";
+            }
+            return "Este CPF não consta como restrito!";
+        }
+        // SUBMODULO CADASTRO BLOQUEADOS **************************************************************
         private static string Modulo_Cadastro_Bloqueados()
         {
-            throw new NotImplementedException();
+            Menus.ShowThreeOptionsMenu
+            (
+                "MODULO DE CADASTRO DE CNPJs BLOQUEADOS",
+                "Cadastrar Novo",
+                "Localizar Registro",
+                "Deletar Registro",
+                Modulo_Cadastro_Bloqueados_New,
+                Modulo_Cadastro_Bloqueados_Find,
+                Modulo_Cadastro_Bloqueados_Delete
+            );
+            return "";
         }
+        //FUNCOES CADASTRO BLOQUEADOS
+        private static string Modulo_Cadastro_Bloqueados_New()
+        {
+            string cNPJ;
+            string msg = "";
 
-        //#endregion
+            cNPJ = Utils.ReadString("Digite o CNPJ bloqueado (sem pontos ou traços): ");
+            if (!Utils.ValidCNPJ(ref cNPJ, ref msg)) return msg;
+            Bloqueados bloqueados = new(cNPJ);
+            try
+            {
+                DataAcces.InsertBloqueados(bloqueados);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+            return "Inserção realizada com sucesso!";
+        }
+        private static string Modulo_Cadastro_Bloqueados_Find()
+        {
+            List<Bloqueados> listaDeBloqueados;
+            string cNPJ;
 
+            try
+            {
+                listaDeBloqueados = DataAcces.GetBloqueados();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cNPJ = Utils.ReadString("Digite o CNPJ do bloqueado (sem pontos ou traços): ");
+            if (Bloqueados.FindKey(listaDeBloqueados, cNPJ)) return "Este CNPJ consta como bloqueado.";
+            return "Este CNPJ não consta como bloqueado.";
+        }
+        private static string Modulo_Cadastro_Bloqueados_Delete()
+        {
+            List<Bloqueados> listaDeBloqueados;
+            string cNPJ;
+
+            try
+            {
+                listaDeBloqueados = DataAcces.GetBloqueados();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cNPJ = Utils.ReadString("Digite o CNPJ do bloqueado (sem pontos ou traços): ");
+            if (Bloqueados.FindKey(listaDeBloqueados, cNPJ))
+            {
+                try
+                {
+                    DataAcces.DeleteBloqueados(new Bloqueados(cNPJ));
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+                return "O CNPJ não consta mais como bloqueado!";
+            }
+            return "Este CNPJ não consta como bloqueado!";
+        }
+        // SUBMODULO REGISTRO DE VOO **************************************************************
         private static string Modulo_RegistroVoo()
         {
-            //Declaracoes
-            string op = "-1";
-            string msg = "";
-            List<String> optionsList = new()
-            {
+            Menus.ShowFiveOptionsMenu
+            (
+                "MODULO DE CADASTRO DE PASSAGEIRO",
                 "Cadastrar Novo",
                 "Localizar Registro",
                 "Editar Registro",
-                "Alterar Situacao",
-                "Visualizar Registros",
-                "Voltar"
-            };
-            string[] options = new string[optionsList.Count];
+                "Inativar Registro",
+                "Visualizar Registros Ativos",
+                Modulo_RegistroVoo_New,
+                Modulo_RegistroVoo_Find,
+                Modulo_RegistroVoo_Edit,
+                Modulo_RegistroVoo_Idle,
+                Modulo_RegistroVoo_Print
+            );
+            return "";
+        }
+        //FUNCOES 
+        private static string Modulo_RegistroVoo_New()
+        {
+            string cPF;
+            string msg = "";
 
-            //Programa Principal
-            options[optionsList.Count - 1] = "0";
-            for (int i = 0; i < optionsList.Count - 1; i++) options[i] = (i + 1).ToString();
-            while (op != "0")
+            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            if (!Utils.ValidCPF(ref cPF, ref msg)) return msg;
+            Passageiro passageiro =
+            new
+            (
+                cPF,
+                Utils.ReadString("Digite o Nome do passageiro: ").ToUpper(),
+                Utils.ReadDateTime("Digite a Data de Nascimento do passageiro (DD/MM/YYYY): "),
+                Utils.ReadSexo("Digite o Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "),
+                DateTime.Today,
+                DateTime.Today,
+                'A'
+            );
+            try
             {
-                Console.Clear();
-                Console.WriteLine("*********MODULO DE REGISTROS DE VOO*********");
-                for (int i = 0; i < optionsList.Count; i++) Console.WriteLine($"{options[i]}. {optionsList[i]}");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
-                {
-                    msg = "Opção invalida! Digite novamente...";
-                    continue;
-                }
-                switch (op)
-                {
-                    case "1":
-                        msg = "";
-                        break;
-                    case "2":
-                        msg = "";
-                        break;
-                    case "3":
-                        msg = "";
-                        break;
-                    case "4":
-                        msg = "";
-                        break;
-                    case "5":
-                        msg = "";
-                        break;
-                    case "0":
-                        msg = "";
-                        break;
-                }
+                DataAcces.InsertPassageiro(passageiro);
             }
-            return msg;
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+            return "Inserção realizada com sucesso!";
+        }
+        private static string Modulo_RegistroVoo_Find()
+        {
+            List<Passageiro> listaDePassageiros;
+            string cPF;
+
+            try
+            {
+                listaDePassageiros = DataAcces.GetPassageiro();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            foreach (Passageiro passageiro in listaDePassageiros)
+            {
+                if (passageiro.CPF == cPF) return $"\n{passageiro}\n";
+            }
+            return "Este CPF não consta na base de dados!";
+        }
+        private static string Modulo_RegistroVoo_Edit()
+        {
+            List<Passageiro> listaDePassageiros;
+            string cPF;
+            Passageiro passageiro;
+
+            try
+            {
+                listaDePassageiros = DataAcces.GetPassageiro();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            if (Passageiro.FindKey(listaDePassageiros, cPF))
+            {
+                passageiro =
+                new
+                (
+                    cPF,
+                    Utils.ReadString("Digite o novo Nome do passageiro: ").ToUpper(),
+                    Utils.ReadDateTime("Digite a nova Data de Nascimento do passageiro (DD/MM/YYYY): "),
+                    char.ToUpper(Utils.ReadChar("Digite o novo Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "))
+                );
+                try
+                {
+                    DataAcces.UpdatePassageiro(passageiro);
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+                return "Edição realizada com sucesso!";
+            }
+            return "Este CPF não consta na base de dados!";
+        }
+        private static string Modulo_RegistroVoo_Idle()
+        {
+            List<Passageiro> listaDePassageiros;
+            string cPF;
+
+            try
+            {
+                listaDePassageiros = DataAcces.GetPassageiro();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            if (Passageiro.FindKey(listaDePassageiros, cPF))
+            {
+                try
+                {
+                    DataAcces.UpdateFlipStatusPassageiro(new Passageiro(cPF, 'I'));
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+                return "Passageiro inativado com sucesso!";
+            }
+            return "Este CPF não consta na base de dados!";
+        }
+        private static string Modulo_RegistroVoo_Print()
+        {
+            char op = ' ';
+            string msg = "";
+            int i = 0;
+            List<Passageiro> listaDePassageiros;
+            int listLenght;
+            List<String> optionsList = new() { "Ir para o início", "Anterior", "Próximo", "Ir para o último", "Voltar" };
+            char[] options = new char[optionsList.Count];
+            options[optionsList.Count - 1] = '0';
+            for (int j = 0; j < optionsList.Count - 1; j++) options[j] = char.Parse((j + 1).ToString());
+
+            try
+            {
+                listaDePassageiros = DataAcces.GetPassageiro();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            listLenght = listaDePassageiros.Count;
+            if (listLenght == 0) return "Nenhum registro consta na base de dados!";
+            while (op != '0')
+                Menus.ShowPrintMenu("REGISTROS DE PASSAGEIROS", ref op, listaDePassageiros[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
+
+            return "";
         }
 
         private static string Modulo_VendaPassagem()

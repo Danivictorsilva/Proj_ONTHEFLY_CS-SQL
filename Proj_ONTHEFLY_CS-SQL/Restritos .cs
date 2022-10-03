@@ -12,15 +12,14 @@ namespace Proj_ONTHEFLY_CS_SQL
         public string CPF { get; set; }
 
         //Metodos
-        public Restritos(string cPF)
+        public Restritos(string cPF) { CPF = cPF; }
+        public override string ToString() => $"CPF:\t\t\t{CPF.Substring(0, 3)}.{CPF.Substring(3, 3)}.{CPF.Substring(6, 3)}-{CPF.Substring(9, 2)}\n";
+        
+        public static bool FindKey(List<Restritos> listaDeRestritos, string cPF)
         {
-            CPF = cPF;
+            foreach (Restritos restritos in listaDeRestritos)
+                if (restritos.CPF == cPF) return true;
+            return false;
         }
-        public override string ToString()
-        {
-            return String.Format("{{'{0}'}}",
-                CPF);
-        }
-        public static string ReturnHeader() => "CPF\n";
     }
 }
