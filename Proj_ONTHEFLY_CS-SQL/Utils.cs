@@ -18,17 +18,33 @@ namespace Proj_ONTHEFLY_CS_SQL
                 Console.Write("Digite um inteiro válido!\n{0}", text);
             return i;
         }
+        public static double ReadDouble(string text)
+        {
+            Console.Write(text);
+            double d;
+            while (!double.TryParse(Console.ReadLine(), out d))
+                Console.Write("Digite um inteiro válido!\n{0}", text);
+            return d;
+        }
         public static char ReadChar(string text)
         {
             Console.Write(text);
             char c = Console.ReadKey().KeyChar;
             return c;
         }
-        public static DateTime ReadDateTime(string text)
+        public static DateTime ReadDate(string text)
         {
             Console.Write(text);
             DateTime d;
             while (!DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
+                Console.Write("Digite uma data e hora válidas!\n{0}", text);
+            return d;
+        }
+        public static DateTime ReadDateAndTime(string text)
+        {
+            Console.Write(text);
+            DateTime d;
+            while (!DateTime.TryParseExact(Console.ReadLine(), "dd/MM/yyyy HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out d))
                 Console.Write("Digite uma data válida!\n{0}", text);
             return d;
         }

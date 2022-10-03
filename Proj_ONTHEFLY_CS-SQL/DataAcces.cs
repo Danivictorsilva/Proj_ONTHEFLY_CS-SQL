@@ -229,5 +229,67 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+        //FUNCOES DE ACESSO A VOO
+        public static List<Voo> GetVoo()
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                return connection.Query<Voo>("SELECT IdVoo, Destino, Aeronave, AssentosOcupados, DataVoo, DataCadastro, Situacao FROM Voo v WHERE v.Situacao != 'I' ORDER BY IdVoo").ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void InsertVoo(Voo voo)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("INSERT INTO Voo VALUES (@Destino, @Aeronave, @AssentosOcupados, @DataVoo, @DataCadastro, @Situacao)", voo);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void UpdateVoo(Voo voo)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE Voo SET Destino = @Destino, Aeronave = @Aeronave, DataVoo = @DataVoo WHERE IdVoo = @IdVoo", voo);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void UpdateFlipStatusVoo(Voo voo)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE Voo SET Situacao = @Situacao WHERE IdVoo = @IdVoo", voo);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        //FUNCOES DE ACESSO A PASSAGEM
+        public static void InsertPassagemVoo(PassagemVoo passagem)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("INSERT INTO PassagemVoo VALUES (@IdPassagem, @IdVoo, @DataUltimaOperacao, @Valor, @Situacao)", passagem);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
     }
 }

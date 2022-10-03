@@ -20,13 +20,22 @@ namespace Proj_ONTHEFLY_CS_SQL
         //Metodos
         public Voo(int idVoo, string destino, string aeronave, int assentosOcupados, DateTime dataVoo, DateTime dataCadastro, char situacao)
         {
-            IdVoo= idVoo;
-            Destino= destino;
-            Aeronave= aeronave;
-
-            DataVoo= dataVoo;
-            DataCadastro= dataCadastro;
-            Situacao= situacao;
+            IdVoo = idVoo;
+            Destino = destino;
+            Aeronave = aeronave;
+            AssentosOcupados = assentosOcupados;
+            DataVoo = dataVoo;
+            DataCadastro = dataCadastro;
+            Situacao = situacao;
+        }
+        public Voo(string destino, string aeronave, int assentosOcupados, DateTime dataVoo, DateTime dataCadastro, char situacao)
+        {
+            Destino = destino;
+            Aeronave = aeronave;
+            AssentosOcupados = assentosOcupados;
+            DataVoo = dataVoo;
+            DataCadastro = dataCadastro;
+            Situacao = situacao;
         }
         public Voo(int idVoo, string destino, string aeronave, DateTime dataVoo)
         {
@@ -45,21 +54,21 @@ namespace Proj_ONTHEFLY_CS_SQL
             return String.Format("{{'{0}';'{1}';'{2}';'{3}';'{4}';'{5}'}}",
                 IdVoo, Destino, Aeronave, DataVoo, DataCadastro.ToShortDateString(), Situacao);
         }
-        public static string ReturnHeader() => "IdVoo;Destino;Aeronave;DataVoo;DataCadastro;Situacao\n";
+        public static string ReturnHeader() => "IdVoo;Destino;Aeronave;AssentosOcupados;DataVoo;DataCadastro\n";
         public override string ToString()
         {
-            return $"IdVoo:\t\t\t{CPF.Substring(0, 3)}.{CPF.Substring(3, 3)}.{CPF.Substring(6, 3)}-{CPF.Substring(9, 2)}\n" +
-                    $"Destino:\t\t\t{Nome}\n" +
-                    $"Aeronave:\t{DataNascimento:dd/MM/yyyy}\n" +
-                    $"DataVoo:\t\t\t{Sexo}\n" +
-                    $"Ultima Compra:\t\t{UltimaCompra:dd/MM/yyyy}\n" +
+            return String.Format("IdVoo:\t\t\tV{0:0000}\n", IdVoo) +
+                    $"Destino:\t\t{Destino}\n" +
+                    $"Aeronave:\t\t{Aeronave}\n" +
+                    $"Assentos Ocupados:\t{AssentosOcupados}\n" +
+                    $"Data Voo:\t\t{DataVoo:dd/MM/yyyy HH:mm}\n" +
                     $"Data Cadastro:\t\t{DataCadastro:dd/MM/yyyy}";
         }
-        public static bool FindKey(List<Passageiro> listaDePassageiros, string cPF)
+        public static bool FindKey(List<Voo> listaDeVoos, int idVoo)
         {
-            foreach (Passageiro passageiro in listaDePassageiros)
+            foreach (Voo voo in listaDeVoos)
             {
-                if (passageiro.CPF == cPF) return true;
+                if (voo.IdVoo == idVoo) return true;
             }
             return false;
         }

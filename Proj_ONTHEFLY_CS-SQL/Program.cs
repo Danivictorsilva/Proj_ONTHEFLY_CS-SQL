@@ -64,22 +64,22 @@ namespace Proj_ONTHEFLY_CS_SQL
             string cPF;
             string msg = "";
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            cPF = Utils.ReadString("Digite o CPF do voo (sem pontos ou traços): ");
             if (!Utils.ValidCPF(ref cPF, ref msg)) return msg;
-            Passageiro passageiro =
+            Passageiro voo =
             new
             (
                 cPF,
-                Utils.ReadString("Digite o Nome do passageiro: ").ToUpper(),
-                Utils.ReadDateTime("Digite a Data de Nascimento do passageiro (DD/MM/YYYY): "),
-                Utils.ReadSexo("Digite o Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "),
+                Utils.ReadString("Digite o Nome do voo: ").ToUpper(),
+                Utils.ReadDate("Digite a Data de Nascimento do voo (DD/MM/YYYY): "),
+                Utils.ReadSexo("Digite o Sexo do voo\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "),
                 DateTime.Today,
                 DateTime.Today,
                 'A'
             );
             try
             {
-                DataAcces.InsertPassageiro(passageiro);
+                DataAcces.InsertPassageiro(voo);
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -109,10 +109,10 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
-            foreach (Passageiro passageiro in listaDePassageiros)
+            cPF = Utils.ReadString("Digite o CPF do voo (sem pontos ou traços): ");
+            foreach (Passageiro voo in listaDePassageiros)
             {
-                if (passageiro.CPF == cPF) return $"\n{passageiro}\n";
+                if (voo.CPF == cPF) return $"\n{voo}\n";
             }
             return "Este CPF não consta na base de dados!";
         }
@@ -120,7 +120,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         {
             List<Passageiro> listaDePassageiros;
             string cPF;
-            Passageiro passageiro;
+            Passageiro voo;
 
             try
             {
@@ -135,20 +135,20 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            cPF = Utils.ReadString("Digite o CPF do voo (sem pontos ou traços): ");
             if (Passageiro.FindKey(listaDePassageiros, cPF))
             {
-                passageiro =
+                voo =
                 new
                 (
                     cPF,
-                    Utils.ReadString("Digite o novo Nome do passageiro: ").ToUpper(),
-                    Utils.ReadDateTime("Digite a nova Data de Nascimento do passageiro (DD/MM/YYYY): "),
-                    char.ToUpper(Utils.ReadChar("Digite o novo Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "))
+                    Utils.ReadString("Digite o novo Nome do voo: ").ToUpper(),
+                    Utils.ReadDate("Digite a nova Data de Nascimento do voo (DD/MM/YYYY): "),
+                    char.ToUpper(Utils.ReadChar("Digite o novo Sexo do voo\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "))
                 );
                 try
                 {
-                    DataAcces.UpdatePassageiro(passageiro);
+                    DataAcces.UpdatePassageiro(voo);
                 }
                 catch (System.Data.SqlClient.SqlException e)
                 {
@@ -180,7 +180,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
+            cPF = Utils.ReadString("Digite o CPF do voo (sem pontos ou traços): ");
             if (Passageiro.FindKey(listaDePassageiros, cPF))
             {
                 try
@@ -264,7 +264,7 @@ namespace Proj_ONTHEFLY_CS_SQL
             (
                 cNPJ,
                 Utils.ReadString("Digite a Razão Social da companhia aérea (máximo de 50 dígitos): ").ToUpper(),
-                Utils.ReadDateTime("Digite a Data de Abertura da companhia aérea (DD/MM/YYYY): "),
+                Utils.ReadDate("Digite a Data de Abertura da companhia aérea (DD/MM/YYYY): "),
                 DateTime.Today,
                 DateTime.Today,
                 'A'
@@ -337,7 +337,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 (
                     cNPJ,
                     Utils.ReadString("Digite a nova Razão Social da companhia aérea: ").ToUpper(),
-                    Utils.ReadDateTime("Digite a nova Data de Nascimento do companhia aérea (DD/MM/YYYY): ")
+                    Utils.ReadDate("Digite a nova Data de Nascimento do companhia aérea (DD/MM/YYYY): ")
                 );
                 try
                 {
@@ -512,9 +512,7 @@ namespace Proj_ONTHEFLY_CS_SQL
 
             inscricao = Utils.ReadString("Digite o código de Inscrição da aeronave (6 dígitos): ").ToUpper();
             foreach (Aeronave aeronave in listaDeAeronaves)
-            {
                 if (aeronave.Inscricao == inscricao) return $"\n{aeronave}\n";
-            }
             return "Esta Aeronave não consta na base de dados!";
         }
         private static string Modulo_Cadastro_Aeronave_Edit()
@@ -842,7 +840,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         {
             Menus.ShowFiveOptionsMenu
             (
-                "MODULO DE CADASTRO DE PASSAGEIRO",
+                "MODULO DE REGISTRO DE VOO",
                 "Cadastrar Novo",
                 "Localizar Registro",
                 "Editar Registro",
@@ -859,25 +857,16 @@ namespace Proj_ONTHEFLY_CS_SQL
         //FUNCOES 
         private static string Modulo_RegistroVoo_New()
         {
-            string cPF;
-            string msg = "";
+            List<Aeronave> listaDeAeronaves;
+            List<Voo> listaDeVoos;
+            int capacity = 0;
+            double precoPassagem;
+            bool auxBool;
+            int listLenght, idVoo;
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
-            if (!Utils.ValidCPF(ref cPF, ref msg)) return msg;
-            Passageiro passageiro =
-            new
-            (
-                cPF,
-                Utils.ReadString("Digite o Nome do passageiro: ").ToUpper(),
-                Utils.ReadDateTime("Digite a Data de Nascimento do passageiro (DD/MM/YYYY): "),
-                Utils.ReadSexo("Digite o Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "),
-                DateTime.Today,
-                DateTime.Today,
-                'A'
-            );
             try
             {
-                DataAcces.InsertPassageiro(passageiro);
+                listaDeAeronaves = DataAcces.GetAeronave();
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -887,16 +876,94 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 return $"Error: {e.Message}";
             }
+
+
+
+            Voo voo =
+            new
+            (
+                Utils.ReadString("Digite o Destino do voo: ").ToUpper(),
+                Utils.ReadString("Digite o código da Aeronave do voo: ").ToUpper(),
+                0,
+                Utils.ReadDateAndTime("Digite a Data e Hora do voo (DD/MM/YYYY hh:mm): "),
+                DateTime.Today,
+                'A'
+            );
+
+            if (voo.DataVoo < voo.DataCadastro) return "Data do voo é inválida!";
+            try
+            {
+                DataAcces.InsertVoo(voo);
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            try
+            {
+                listaDeVoos = DataAcces.GetVoo();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+            idVoo = listaDeVoos[listaDeVoos.Count-1].IdVoo;
+
+            foreach (Aeronave aeronave in listaDeAeronaves)
+                if (aeronave.Inscricao == voo.Aeronave)
+                    capacity = aeronave.Capacidade;
+
+            do
+            {
+                precoPassagem = Utils.ReadDouble("Digite o valor das passagens desse voo (máximo 9.999,99): ");
+                auxBool = precoPassagem < 0 || precoPassagem > 9999.99;
+                if (auxBool) Console.WriteLine("Opção inválida...");
+            } while (auxBool);
+
+            for (int i = 0; i < capacity; i++)
+            {
+                try
+                {
+                    DataAcces.InsertPassagemVoo(new PassagemVoo
+                        (
+                            i + 1,
+                            idVoo,
+                            DateTime.Today,
+                            precoPassagem,
+                            'L'
+                        )
+                    );
+                }
+                catch (System.Data.SqlClient.SqlException e)
+                {
+                    return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                }
+                catch (Exception e)
+                {
+                    return $"Error: {e.Message}";
+                }
+            }
+
+
             return "Inserção realizada com sucesso!";
         }
         private static string Modulo_RegistroVoo_Find()
         {
-            List<Passageiro> listaDePassageiros;
-            string cPF;
+            List<Voo> listaDeVoos;
+            int idVoo;
 
             try
             {
-                listaDePassageiros = DataAcces.GetPassageiro();
+                listaDeVoos = DataAcces.GetVoo();
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -907,22 +974,22 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
-            foreach (Passageiro passageiro in listaDePassageiros)
+            idVoo = Utils.ReadInt("Digite o código de Identificação do voo (apenas números): V");
+            foreach (Voo voo in listaDeVoos)
             {
-                if (passageiro.CPF == cPF) return $"\n{passageiro}\n";
+                if (voo.IdVoo == idVoo) return $"\n{voo}\n";
             }
-            return "Este CPF não consta na base de dados!";
+            return "Este voo não consta na base de dados!";
         }
         private static string Modulo_RegistroVoo_Edit()
         {
-            List<Passageiro> listaDePassageiros;
-            string cPF;
-            Passageiro passageiro;
+            List<Voo> listaDeVoos;
+            int idVoo;
+            Voo voo;
 
             try
             {
-                listaDePassageiros = DataAcces.GetPassageiro();
+                listaDeVoos = DataAcces.GetVoo();
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -933,20 +1000,20 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
-            if (Passageiro.FindKey(listaDePassageiros, cPF))
+            idVoo = Utils.ReadInt("Digite o código de Identificação do voo (apenas números): V");
+            if (Voo.FindKey(listaDeVoos, idVoo))
             {
-                passageiro =
+                voo =
                 new
                 (
-                    cPF,
-                    Utils.ReadString("Digite o novo Nome do passageiro: ").ToUpper(),
-                    Utils.ReadDateTime("Digite a nova Data de Nascimento do passageiro (DD/MM/YYYY): "),
-                    char.ToUpper(Utils.ReadChar("Digite o novo Sexo do passageiro\nM - Masculino\nF - Feminino\nN - Não deseja informar\nOpção: "))
+                    idVoo,
+                    Utils.ReadString("Digite o novo Destino do voo: ").ToUpper(),
+                    Utils.ReadString("Digite o novo código da Aeronave do voo: ").ToUpper(),
+                    Utils.ReadDateAndTime("Digite a nova Data e Hora do voo (DD/MM/YYYY hh:mm): ")
                 );
                 try
                 {
-                    DataAcces.UpdatePassageiro(passageiro);
+                    DataAcces.UpdateVoo(voo);
                 }
                 catch (System.Data.SqlClient.SqlException e)
                 {
@@ -958,16 +1025,16 @@ namespace Proj_ONTHEFLY_CS_SQL
                 }
                 return "Edição realizada com sucesso!";
             }
-            return "Este CPF não consta na base de dados!";
+            return "Este Voo não consta na base de dados!";
         }
         private static string Modulo_RegistroVoo_Idle()
         {
-            List<Passageiro> listaDePassageiros;
-            string cPF;
+            List<Voo> listaDeVoos;
+            int idVoo;
 
             try
             {
-                listaDePassageiros = DataAcces.GetPassageiro();
+                listaDeVoos = DataAcces.GetVoo();
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -978,12 +1045,12 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            cPF = Utils.ReadString("Digite o CPF do passageiro (sem pontos ou traços): ");
-            if (Passageiro.FindKey(listaDePassageiros, cPF))
+            idVoo = Utils.ReadInt("Digite o código de Identificação do voo (apenas números): V");
+            if (Voo.FindKey(listaDeVoos, idVoo))
             {
                 try
                 {
-                    DataAcces.UpdateFlipStatusPassageiro(new Passageiro(cPF, 'I'));
+                    DataAcces.UpdateFlipStatusVoo(new Voo(idVoo, 'I'));
                 }
                 catch (System.Data.SqlClient.SqlException e)
                 {
@@ -993,16 +1060,16 @@ namespace Proj_ONTHEFLY_CS_SQL
                 {
                     return $"Error: {e.Message}";
                 }
-                return "Passageiro inativado com sucesso!";
+                return "Voo inativado com sucesso!";
             }
-            return "Este CPF não consta na base de dados!";
+            return "Este Voo não consta na base de dados!";
         }
         private static string Modulo_RegistroVoo_Print()
         {
             char op = ' ';
             string msg = "";
             int i = 0;
-            List<Passageiro> listaDePassageiros;
+            List<Voo> listaDeVoos;
             int listLenght;
             List<String> optionsList = new() { "Ir para o início", "Anterior", "Próximo", "Ir para o último", "Voltar" };
             char[] options = new char[optionsList.Count];
@@ -1011,7 +1078,7 @@ namespace Proj_ONTHEFLY_CS_SQL
 
             try
             {
-                listaDePassageiros = DataAcces.GetPassageiro();
+                listaDeVoos = DataAcces.GetVoo();
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -1022,10 +1089,10 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-            listLenght = listaDePassageiros.Count;
+            listLenght = listaDeVoos.Count;
             if (listLenght == 0) return "Nenhum registro consta na base de dados!";
             while (op != '0')
-                Menus.ShowPrintMenu("REGISTROS DE PASSAGEIROS", ref op, listaDePassageiros[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
+                Menus.ShowPrintMenu("REGISTROS DE VOOS", ref op, listaDeVoos[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
 
             return "";
         }
