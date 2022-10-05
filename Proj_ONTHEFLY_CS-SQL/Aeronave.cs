@@ -37,6 +37,12 @@ namespace Proj_ONTHEFLY_CS_SQL
             Inscricao = incricao;
             Situacao = situacao;
         }
+        public Aeronave(string inscricao, DateTime ultimaVenda)
+        {
+            Inscricao = inscricao;
+            UltimaVenda = ultimaVenda;
+        }
+        public Aeronave() { }
         public override string ToString()
         {
             return $"Inscrição:\t\t{Inscricao}\n" +
@@ -48,9 +54,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         public static bool FindKey(List<Aeronave> listaDeAeronaves, string incricao)
         {
             foreach (Aeronave aeronave in listaDeAeronaves)
-            {
                 if (aeronave.Inscricao == incricao) return true;
-            }
             return false;
         }
     }

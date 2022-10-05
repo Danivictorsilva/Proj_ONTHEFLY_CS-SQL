@@ -18,11 +18,11 @@ namespace Proj_ONTHEFLY_CS_SQL
                 Console.Write("Digite um inteiro válido!\n{0}", text);
             return i;
         }
-        public static double ReadDouble(string text)
+        public static decimal ReadDecimal(string text)
         {
             Console.Write(text);
-            double d;
-            while (!double.TryParse(Console.ReadLine(), out d))
+            decimal d;
+            while (!decimal.TryParse(Console.ReadLine(), out d))
                 Console.Write("Digite um inteiro válido!\n{0}", text);
             return d;
         }
@@ -48,13 +48,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 Console.Write("Digite uma data válida!\n{0}", text);
             return d;
         }
-        public static bool BuscarNoArray(string c, string[] list)
-        {
-            for (int i = 0; i < list.Length; i++)
-                if (list[i] == c) return true;
-            return false;
-        }
-        public static bool BuscarNoArray(char c, char[] list)
+        public static bool FindCharInArray(char c, char[] list)
         {
             for (int i = 0; i < list.Length; i++)
                 if (list[i] == c) return true;
@@ -148,24 +142,6 @@ namespace Proj_ONTHEFLY_CS_SQL
                 msg = "O CNPJ é inválido\n";
                 return false;
             }
-        }
-        public static string ReadTelefone(string text)
-        {
-            string TelString;
-            long TelLong;
-            Console.Write(text);
-            TelString = Console.ReadLine();
-            while (!long.TryParse(TelString, out TelLong))
-            {
-                Console.Write("Digite um Telefone válido!\n{0}", text);
-                TelString = Console.ReadLine();
-            }
-            while (TelString.Length != 11)
-            {
-                Console.Write("Digite um Telefone válido!\n{0}", text);
-                TelString = Console.ReadLine();
-            }
-            return TelString;
         }
         public static char ReadSexo(string text)
         {

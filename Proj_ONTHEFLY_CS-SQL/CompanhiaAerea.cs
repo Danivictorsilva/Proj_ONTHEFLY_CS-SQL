@@ -48,9 +48,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         public static bool FindKey(List<CompanhiaAerea> listaDeCompanhiaAereas, string cNPJ)
         {
             foreach (CompanhiaAerea companhiaAerea in listaDeCompanhiaAereas)
-            {
                 if (companhiaAerea.CNPJ == cNPJ) return true;
-            }
             return false;
         }
     }

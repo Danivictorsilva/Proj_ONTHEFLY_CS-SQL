@@ -1,7 +1,5 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 
 namespace Proj_ONTHEFLY_CS_SQL
 {
@@ -111,9 +109,7 @@ namespace Proj_ONTHEFLY_CS_SQL
 
             cPF = Utils.ReadString("Digite o CPF do voo (sem pontos ou traços): ");
             foreach (Passageiro voo in listaDePassageiros)
-            {
                 if (voo.CPF == cPF) return $"\n{voo}\n";
-            }
             return "Este CPF não consta na base de dados!";
         }
         private static string Modulo_Cadastro_Passageiro_Edit()
@@ -835,7 +831,7 @@ namespace Proj_ONTHEFLY_CS_SQL
             }
             return "Este CNPJ não consta como bloqueado!";
         }
-        // SUBMODULO REGISTRO DE VOO **************************************************************
+        // MODULO REGISTRO DE VOO **************************************************************
         private static string Modulo_RegistroVoo()
         {
             Menus.ShowFiveOptionsMenu
@@ -858,15 +854,19 @@ namespace Proj_ONTHEFLY_CS_SQL
         private static string Modulo_RegistroVoo_New()
         {
             List<Aeronave> listaDeAeronaves;
+            List<Bloqueados> listaDeBloqueados;
+            List<CompanhiaAerea> listaDeCompanhiaAereas;
             List<Voo> listaDeVoos;
             int capacity = 0;
-            double precoPassagem;
+            decimal precoPassagem;
             bool auxBool;
-            int listLenght, idVoo;
+            int idVoo;
 
             try
             {
                 listaDeAeronaves = DataAcces.GetAeronave();
+                listaDeBloqueados = DataAcces.GetBloqueados();
+                listaDeCompanhiaAereas = DataAcces.GetCompanhiaAerea();
             }
             catch (System.Data.SqlClient.SqlException e)
             {
@@ -877,35 +877,30 @@ namespace Proj_ONTHEFLY_CS_SQL
                 return $"Error: {e.Message}";
             }
 
-
-
             Voo voo =
             new
             (
-                Utils.ReadString("Digite o Destino do voo: ").ToUpper(),
+                Utils.ReadString("Digite o código IATA do Destino do voo: ").ToUpper(),
                 Utils.ReadString("Digite o código da Aeronave do voo: ").ToUpper(),
                 0,
                 Utils.ReadDateAndTime("Digite a Data e Hora do voo (DD/MM/YYYY hh:mm): "),
                 DateTime.Today,
                 'A'
             );
+            foreach (Aeronave aeronave in listaDeAeronaves)
+                if (voo.Aeronave == aeronave.Inscricao)
+                {
+                    if (!CompanhiaAerea.FindKey(listaDeCompanhiaAereas, aeronave.CNPJCompanhia)) return "A companhia aérea proprietária da aeronave não consta na base de dados!";
+                    foreach (Bloqueados bloqueado in listaDeBloqueados)
+                        if (bloqueado.CNPJ == aeronave.CNPJCompanhia)
+                            return "A companhia aérea proprietária da aeronave consta como bloqueada. Não é possível continuar com o cadastro do voo!";
+
+                }
 
             if (voo.DataVoo < voo.DataCadastro) return "Data do voo é inválida!";
             try
             {
                 DataAcces.InsertVoo(voo);
-            }
-            catch (System.Data.SqlClient.SqlException e)
-            {
-                return $"O banco de dados retornou o seguinte erro: {e.Message}";
-            }
-            catch (Exception e)
-            {
-                return $"Error: {e.Message}";
-            }
-
-            try
-            {
                 listaDeVoos = DataAcces.GetVoo();
             }
             catch (System.Data.SqlClient.SqlException e)
@@ -916,7 +911,8 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 return $"Error: {e.Message}";
             }
-            idVoo = listaDeVoos[listaDeVoos.Count-1].IdVoo;
+
+            idVoo = listaDeVoos[listaDeVoos.Count - 1].IdVoo;
 
             foreach (Aeronave aeronave in listaDeAeronaves)
                 if (aeronave.Inscricao == voo.Aeronave)
@@ -924,8 +920,8 @@ namespace Proj_ONTHEFLY_CS_SQL
 
             do
             {
-                precoPassagem = Utils.ReadDouble("Digite o valor das passagens desse voo (máximo 9.999,99): ");
-                auxBool = precoPassagem < 0 || precoPassagem > 9999.99;
+                precoPassagem = Utils.ReadDecimal("Digite o valor das passagens desse voo (máximo 9.999,99): ");
+                auxBool = precoPassagem < 0M || precoPassagem > 9999.99M;
                 if (auxBool) Console.WriteLine("Opção inválida...");
             } while (auxBool);
 
@@ -933,15 +929,7 @@ namespace Proj_ONTHEFLY_CS_SQL
             {
                 try
                 {
-                    DataAcces.InsertPassagemVoo(new PassagemVoo
-                        (
-                            i + 1,
-                            idVoo,
-                            DateTime.Today,
-                            precoPassagem,
-                            'L'
-                        )
-                    );
+                    DataAcces.InsertPassagemVoo(new PassagemVoo(i + 1, idVoo, DateTime.Today, precoPassagem, 'L'));
                 }
                 catch (System.Data.SqlClient.SqlException e)
                 {
@@ -953,8 +941,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 }
             }
 
-
-            return "Inserção realizada com sucesso!";
+            return "Voo cadastrado com sucesso!";
         }
         private static string Modulo_RegistroVoo_Find()
         {
@@ -976,9 +963,7 @@ namespace Proj_ONTHEFLY_CS_SQL
 
             idVoo = Utils.ReadInt("Digite o código de Identificação do voo (apenas números): V");
             foreach (Voo voo in listaDeVoos)
-            {
                 if (voo.IdVoo == idVoo) return $"\n{voo}\n";
-            }
             return "Este voo não consta na base de dados!";
         }
         private static string Modulo_RegistroVoo_Edit()
@@ -1099,62 +1084,260 @@ namespace Proj_ONTHEFLY_CS_SQL
 
         private static string Modulo_VendaPassagem()
         {
-            //Declaracoes
-            string op = "-1";
-            string msg = "";
-            List<String> optionsList = new()
-            {
+            Menus.ShowFourOptionsMenu
+            (
+                "MODULO DE VENDAS DE PASSAGEM",
+                "Visualizar Próximos Voos Para Um Destino",
                 "Cadastrar Nova Venda",
                 "Localizar Registro de Venda",
                 "Visualizar Registros de Venda",
-                "Visualizar Proximos Voos Para Um Destino",
-                "Localizar Um Voo",
-                "Visualizar Registros de Voos",
-                "Voltar"
-            };
-            string[] options = new string[optionsList.Count];
+                Modulo_VendaPassagem_Voos,
+                Modulo_VendaPassagem_New,
+                Modulo_VendaPassagem_Find,
+                Modulo_VendaPassagem_Print
+            );
 
-            //Programa Principal
-            options[optionsList.Count - 1] = "0";
-            for (int i = 0; i < optionsList.Count - 1; i++) options[i] = (i + 1).ToString();
-            while (op != "0")
+            return "";
+        }
+        private static string Modulo_VendaPassagem_Voos()
+        {
+            List<Voo> listaDeVoos;
+            List<Destino> listaDeDestinos;
+            string destino;
+            string msg = "";
+
+            try
+            {
+                listaDeVoos = DataAcces.GetVoo();
+                listaDeDestinos = DataAcces.GetDestino();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            destino = Utils.ReadString("Digite o código IATA do aeroporto de Destino do voo: ").ToUpper();
+            if (Destino.FindKey(listaDeDestinos, destino))
+            {
+                msg += "\n" + Voo.ReturnHeader();
+                foreach (Voo voo in listaDeVoos)
+                    if (voo.Destino == destino)
+                        msg += voo.TopFormat() + "\n";
+                return msg;
+            }
+            return "Este aeroporto não consta na base de dados!";
+        }
+        private static string Modulo_VendaPassagem_New()
+        {
+            List<Passageiro> listaDePassageiros;
+            List<Voo> listaDeVoos;
+            List<Venda> listaDeVendas;
+            List<Aeronave> listaDeAeronaves;
+            List<PassagemVoo> listaDePassagens;
+            List<Restritos> listaDeRestritos;
+            ItemVenda itemVenda;
+            Voo v = new();
+            string cPF, inscricao = "";
+            int i = 0, idVoo, idVenda, idPassagem = 0, passagensLivres = 0;
+            decimal valorPassagem = 0;
+            decimal totalValue = 0;
+            int auxInt;
+            bool auxBool;
+
+            try
+            {
+                listaDePassageiros = DataAcces.GetPassageiro();
+                listaDeVoos = DataAcces.GetVoo();
+                listaDeAeronaves = DataAcces.GetAeronave();
+                listaDePassagens = DataAcces.GetPassagem();
+                listaDeRestritos = DataAcces.GetRestritos();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            cPF = Utils.ReadString("Digite o CPF do passageiro para qual será realizada a venda (sem pontos ou traços): ");
+            if (!Passageiro.FindKey(listaDePassageiros, cPF)) return "Este CPF não consta na base de dados!";
+            foreach (Passageiro passageiro in listaDePassageiros)
+                if (passageiro.CPF == cPF)
+                {
+                    if ((DateTime.Today - passageiro.DataNascimento.AddYears(18)).Days < 0)
+                        return "Não é permitido vender para menores de 18 anos!";
+                    Console.WriteLine($"{passageiro}\nConfirme as informações do passageiro acima descritas.");
+                    break;
+                }
+            foreach (Restritos restritos in listaDeRestritos)
+                if (restritos.CPF == cPF)
+                    return "Este CPF consta como restrito. Não é possível continuar com a venda!";
+
+            Venda venda = new(DateTime.Today, cPF, 0);
+
+            try
+            {
+                DataAcces.InsertVenda(venda);
+                listaDeVendas = DataAcces.GetVenda();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            idVenda = listaDeVendas[^1].IdVenda;
+
+            while (i < 4)
             {
                 Console.Clear();
-                Console.WriteLine("*********MODULO DE VENDA DE PASSAGEM*********");
-                for (int i = 0; i < optionsList.Count; i++) Console.WriteLine($"{options[i]}. {optionsList[i]}");
-                Console.Write("\n{0}{1}{2}", msg == "" ? "" : ">>> ", msg, msg == "" ? "" : "\n");
-                op = Utils.ReadString("Opção: ");
-                if (!Utils.BuscarNoArray(op, options))
+                idVoo = Utils.ReadInt("Digite o código de Identificação do voo (apenas números): V");
+                if (!Voo.FindKey(listaDeVoos, idVoo))
                 {
-                    msg = "Opção invalida! Digite novamente...";
+                    Console.WriteLine("Este voo não consta na base de dados! Digite novamente...");
                     continue;
                 }
-                switch (op)
+                foreach (Voo voo in listaDeVoos)
+                    if (voo.IdVoo == idVoo)
+                    {
+                        foreach (Aeronave aeronave in listaDeAeronaves)
+                            if (voo.Aeronave == aeronave.Inscricao)
+                            {
+                                inscricao = aeronave.Inscricao;
+                                passagensLivres = aeronave.Capacidade - voo.AssentosOcupados;
+                                break;
+                            }
+                        v = voo;
+                        break;
+                    }
+                if (passagensLivres < 0)
                 {
-                    case "1":
-                        msg = "";
-                        break;
-                    case "2":
-                        msg = "";
-                        break;
-                    case "3":
-                        msg = "";
-                        break;
-                    case "4":
-                        msg = "";
-                        break;
-                    case "5":
-                        msg = "";
-                        break;
-                    case "6":
-                        msg = "";
-                        break;
-                    case "0":
-                        msg = "";
-                        break;
+                    Console.WriteLine("Não há mais passagens livres para esse voo!");
+                    continue;
                 }
+                foreach (PassagemVoo passagem in listaDePassagens)
+                    if (passagem.IdVoo == idVoo)
+                    {
+                        valorPassagem = passagem.Valor;
+                        break;
+                    }
+                do
+                {
+                    auxInt = Utils.ReadInt(String.Format("Digite a quantidade de passagens do voo V{0:0000} (máximo {1}): ", idVoo, 4 - i));
+                    auxBool = auxInt < 0 || auxInt > (4 - i);
+                    if (auxBool) Console.WriteLine("Opção inválida...");
+                } while (auxBool);
+
+                for (int j = 0; j < auxInt; j++)
+                {
+                    foreach (PassagemVoo passagem in listaDePassagens)
+                        if (passagem.IdVoo == idVoo && passagem.Situacao == 'L')
+                        {
+                            idPassagem = passagem.IdPassagem;
+                            break;
+                        }
+                    itemVenda = new(idVenda, idPassagem, idVoo);
+                    try
+                    {
+                        DataAcces.InsertItemVenda(itemVenda);
+                        DataAcces.UpdateStatusPassagem(new PassagemVoo(idPassagem, DateTime.Today, idVoo, 'P'));
+                        listaDePassagens = DataAcces.GetPassagem();
+                    }
+                    catch (System.Data.SqlClient.SqlException e)
+                    {
+                        return $"O banco de dados retornou o seguinte erro: {e.Message}";
+                    }
+                    catch (Exception e)
+                    {
+                        return $"Error: {e.Message}";
+                    }
+                    totalValue += valorPassagem;
+                    DataAcces.UpdateUltimaVendaAeronave(new Aeronave(inscricao, DateTime.Today));
+                }
+                DataAcces.UpdateAssentosOcupadosVoo(new Voo(idVoo, v.AssentosOcupados + auxInt));
+                i += auxInt;
+                if (char.ToUpper(Utils.ReadChar("Pressione 'S' para finalizar a venda e sair ou qualquer outra tecla para continuar: ")) == 'S') break;
+
             }
-            return msg;
+            DataAcces.UpdateUltimaCompraPassageiro(new Passageiro(cPF, DateTime.Today));
+            DataAcces.UpdateValueVenda(new Venda(idVenda, totalValue));
+            return "Venda realizada com sucesso!";
+        }
+        private static string Modulo_VendaPassagem_Find()
+        {
+            List<Venda> listaDeVendas;
+            List<ItemVenda> listaDeItemVenda;
+            int idVenda;
+            string msg = "";
+
+            try
+            {
+                listaDeVendas = DataAcces.GetVenda();
+                listaDeItemVenda = DataAcces.GetItemVenda();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            idVenda = Utils.ReadInt("Digite o código de Identificação da venda (apenas números): ");
+            foreach (Venda venda in listaDeVendas)
+                if (venda.IdVenda == idVenda)
+                {
+                    msg += $"\n{venda}\n\nITENS DA VENDA:\n{ItemVenda.ReturnHeader()}";
+                    foreach (ItemVenda itemVenda in listaDeItemVenda)
+                    {
+                        if (venda.IdVenda == itemVenda.IdVenda)
+                            msg += itemVenda.TopFormat() +"\n";
+                    }
+                    return msg;
+                }
+            return "Este venda não consta na base de dados!";
+        }
+        private static string Modulo_VendaPassagem_Print()
+        {
+            char op = ' ';
+            string msg = "";
+            int i = 0;
+            List<Venda> listaDeVendas;
+            int listLenght;
+            List<String> optionsList = new() { "Ir para o início", "Anterior", "Próximo", "Ir para o último", "Voltar" };
+            char[] options = new char[optionsList.Count];
+            options[optionsList.Count - 1] = '0';
+            for (int j = 0; j < optionsList.Count - 1; j++) options[j] = char.Parse((j + 1).ToString());
+
+            try
+            {
+                listaDeVendas = DataAcces.GetVenda();
+            }
+            catch (System.Data.SqlClient.SqlException e)
+            {
+                return $"O banco de dados retornou o seguinte erro: {e.Message}";
+            }
+            catch (Exception e)
+            {
+                return $"Error: {e.Message}";
+            }
+
+            listLenght = listaDeVendas.Count;
+            if (listLenght == 0) return "Nenhum registro consta na base de dados!";
+            while (op != '0')
+                Menus.ShowPrintMenu("REGISTROS DE VOOS", ref op, listaDeVendas[i].ToString(), listLenght, ref i, optionsList, options, ref msg);
+
+            return "";
         }
     }
 }

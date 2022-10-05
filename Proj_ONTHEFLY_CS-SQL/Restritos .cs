@@ -13,8 +13,6 @@ namespace Proj_ONTHEFLY_CS_SQL
 
         //Metodos
         public Restritos(string cPF) { CPF = cPF; }
-        public override string ToString() => $"CPF:\t\t\t{CPF.Substring(0, 3)}.{CPF.Substring(3, 3)}.{CPF.Substring(6, 3)}-{CPF.Substring(9, 2)}\n";
-        
         public static bool FindKey(List<Restritos> listaDeRestritos, string cPF)
         {
             foreach (Restritos restritos in listaDeRestritos)

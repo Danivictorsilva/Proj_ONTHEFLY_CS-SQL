@@ -57,6 +57,18 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+        public static void UpdateUltimaCompraPassageiro(Passageiro passageiro)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE Passageiro SET UltimaCompra = @UltimaCompra WHERE CPF = @CPF", passageiro);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         //FUNCOES DE ACESSO A COMPANHIA AEREA
         public static List<CompanhiaAerea> GetCompanhiaAerea()
         {
@@ -155,6 +167,18 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+        public static void UpdateUltimaVendaAeronave(Aeronave aeronave)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE Aeronave SET UltimaVenda = @UltimaVenda WHERE Inscricao = @Inscricao", aeronave);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         //FUNCOES DE ACESSO A RESTRITOS
         public static List<Restritos> GetRestritos()
         {
@@ -242,6 +266,7 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+
         public static void InsertVoo(Voo voo)
         {
             try
@@ -278,13 +303,124 @@ namespace Proj_ONTHEFLY_CS_SQL
                 throw;
             }
         }
+        public static void UpdateAssentosOcupadosVoo(Voo voo)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE Voo SET AssentosOcupados = @AssentosOcupados WHERE IdVoo = @IdVoo", voo);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         //FUNCOES DE ACESSO A PASSAGEM
+        public static List<PassagemVoo> GetPassagem()
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                return connection.Query<PassagemVoo>("SELECT IdPassagem, IdVoo, DataUltimaOperacao, Valor, Situacao FROM PassagemVoo ORDER BY IdPassagem").ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
         public static void InsertPassagemVoo(PassagemVoo passagem)
         {
             try
             {
                 using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
                 connection.Execute("INSERT INTO PassagemVoo VALUES (@IdPassagem, @IdVoo, @DataUltimaOperacao, @Valor, @Situacao)", passagem);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void UpdateStatusPassagem(PassagemVoo passagem)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE PassagemVoo SET DataUltimaOperacao = @DataUltimaOperacao, Situacao = @Situacao WHERE IdPassagem = @IdPassagem AND IdVoo = @IdVoo", passagem);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        //FUNCOES DE ACESSO A VENDA
+        public static List<Venda> GetVenda()
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                return connection.Query<Venda>("SELECT IdVenda, DataVenda, Passageiro, ValorTotal FROM Venda ORDER BY IdVenda").ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void InsertVenda(Venda venda)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("INSERT INTO Venda VALUES (@DataVenda, @Passageiro, @ValorTotal)", venda);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void UpdateValueVenda(Venda venda)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("UPDATE Venda SET ValorTotal = @ValorTotal WHERE IdVenda= @IdVenda", venda);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        //FUNCOES DE ACESSO A ITEMVENDA
+        public static List<ItemVenda> GetItemVenda()
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                return connection.Query<ItemVenda>("SELECT IdVenda, IdPassagem, IdVoo FROM ItemVenda ORDER BY IdVenda").ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        public static void InsertItemVenda(ItemVenda itemVenda)
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                connection.Execute("INSERT INTO ItemVenda VALUES (@IdVenda, @IdPassagem, @IdVoo)", itemVenda);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+        //FUNCOES DE ACESSO A DESTINO
+        public static List<Destino> GetDestino()
+        {
+            try
+            {
+                using IDbConnection connection = new System.Data.SqlClient.SqlConnection(Helper.ConnectionString("ONTHEFLYDB"));
+                return connection.Query<Destino>("SELECT IATA FROM Destino").ToList();
             }
             catch (Exception)
             {

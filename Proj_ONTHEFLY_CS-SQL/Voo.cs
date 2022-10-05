@@ -49,15 +49,25 @@ namespace Proj_ONTHEFLY_CS_SQL
             IdVoo = idVoo;
             Situacao = situacao;
         }
+        public Voo(int idVoo, int assentosOcupados)
+        {
+            IdVoo = idVoo;
+            AssentosOcupados = assentosOcupados;
+        }
+
+        public Voo()
+        {
+        }
+
         public string TopFormat()
         {
-            return String.Format("{{'{0}';'{1}';'{2}';'{3}';'{4}';'{5}'}}",
+            return String.Format("{{'V{0:0000}';'{1}';'{2}';'{3}';'{4}';'{5}'}}",
                 IdVoo, Destino, Aeronave, DataVoo, DataCadastro.ToShortDateString(), Situacao);
         }
-        public static string ReturnHeader() => "IdVoo;Destino;Aeronave;AssentosOcupados;DataVoo;DataCadastro\n";
+        public static string ReturnHeader() => "IdVoo;Destino;Aeronave;AssentosOcupados;DataVoo;DataCadastro;Situacao\n";
         public override string ToString()
         {
-            return String.Format("IdVoo:\t\t\tV{0:0000}\n", IdVoo) +
+            return $"IdVoo:\t\t\tV{IdVoo:0000}\n" +
                     $"Destino:\t\t{Destino}\n" +
                     $"Aeronave:\t\t{Aeronave}\n" +
                     $"Assentos Ocupados:\t{AssentosOcupados}\n" +

@@ -25,6 +25,11 @@ namespace Proj_ONTHEFLY_CS_SQL
             DataCadastro = dataCadastro;
             Situacao = situacao;
         }
+        public Passageiro(string cPF, DateTime ultimaCompra)
+        {
+            CPF = cPF;
+            UltimaCompra = ultimaCompra;
+        }
         public Passageiro(string cPF, string nome, DateTime dataNascimento, char sexo)
         {
             CPF = cPF;
@@ -49,9 +54,7 @@ namespace Proj_ONTHEFLY_CS_SQL
         public static bool FindKey(List<Passageiro> listaDePassageiros, string cPF)
         {
             foreach (Passageiro passageiro in listaDePassageiros)
-            {
                 if (passageiro.CPF == cPF) return true;
-            }
             return false;
         }
     }

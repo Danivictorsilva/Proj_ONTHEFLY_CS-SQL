@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Proj_ONTHEFLY_CS_SQL
 {
@@ -12,11 +8,11 @@ namespace Proj_ONTHEFLY_CS_SQL
         public int IdPassagem { get; set; }
         public int IdVoo { get; set; }
         public DateTime DataUltimaOperacao { get; set; }
-        public double Valor { get; set; }
+        public decimal Valor { get; set; }
         public char Situacao { get; set; }
 
         //Metodos
-        public PassagemVoo(int idPassagem, int idVoo, DateTime dataUltimaOperacao, double valor, char situacao)
+        public PassagemVoo(int idPassagem, int idVoo, DateTime dataUltimaOperacao, decimal valor, char situacao)
         {
             IdPassagem = idPassagem;
             IdVoo = idVoo;
@@ -24,11 +20,12 @@ namespace Proj_ONTHEFLY_CS_SQL
             DataUltimaOperacao = dataUltimaOperacao;
             Situacao = situacao;
         }
-        public override string ToString()
+        public PassagemVoo(int idPassagem, DateTime dataUltimaOperacao, int idVoo, char situacao)
         {
-            return String.Format("{{'{0}';'{1}';'{2}';'{3}';'{4}'}}",
-                IdPassagem, IdVoo, DataUltimaOperacao.ToShortDateString(), Valor, Situacao);
+            IdPassagem = idPassagem;
+            IdVoo = idVoo;
+            DataUltimaOperacao = dataUltimaOperacao;
+            Situacao = situacao;
         }
-        public static string ReturnHeader() => "IdPassagem;IdVoo;DataUltimaOperacao;Valor;Situacao\n";
     }
 }
